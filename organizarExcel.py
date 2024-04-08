@@ -71,17 +71,6 @@ def organizadorEx():
             for i in range(len(df_bl1.index)):
                 try:
                     aniversario = df_bl1['NASCIMENTO'].loc[i]
-                    # print('Try:', aniversario)
-                    # if aniversario == '0' or aniversario == 0 or aniversario == "":
-                    #     aniversario = date
-                    #     worksheet.write(lData, 0, aniversario,format2)
-                    #     print('if:', aniversario)
-                    # else:
-                    #     dia = aniversario[0:2]
-                    #     mes = aniversario[3:5]
-                    #     ano = aniversario[6:]
-                    #     aniversario = datetime.date(int(ano), int(mes), int(dia))
-                    #     print('else:', aniversario)
                     worksheet.write(lData, 0, aniversario,format2)
                 except:
                     aniversario = date
