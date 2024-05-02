@@ -206,6 +206,7 @@ def organizadorEx():
                     PROP = 'PROPR' #2
                     MORADOR = 'MORADOR' #2
                     morador = 'morador' #2
+                    Morador = 'Morador' #2
                     DEPENDENTE =  'DEPENDENTE'
                     dependente = 'dependente'
                     sindico =  'ndico' #1  
@@ -226,9 +227,11 @@ def organizadorEx():
                     PAI = 'PAI'#9
                     Zelador = 'Zelador'
                     ZELADOR = 'ZELADOR'
-                    Inquilino = 'inquilino'
+                    Inquilino = 'Inquilino'
                     INQUILINO = 'INQUILINO'
-                    if Prop in Perfil or PROP in Perfil or Inquilino in Perfil or INQUILINO in Perfil or MORADOR in Perfil or morador in Perfil:
+                    inquilino = 'inquilino'
+
+                    if Prop in Perfil or PROP in Perfil or Inquilino in Perfil or INQUILINO in Perfil or MORADOR in Perfil or morador in Perfil or Morador in Perfil or inquilino in Perfil:
                         Perfil = '2'
                         worksheet.write(lPerfil, 7, Perfil)
 

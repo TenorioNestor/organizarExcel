@@ -3,14 +3,17 @@ import pandas as pd
 from tkinter import messagebox
 import datetime
 import http.client
-
+import re
 import requests
 
 
 
 cadastroscomerro = []
+erroendpoint = []
+errojson = []
 dataBl1 = open(r"C:\Users\Futturis-05\Documents\leitorPython\leitor\CadRef.xlsx",'rb')
 df_bl1 = pd.read_excel(dataBl1)
+
 
 for i in range(len(df_bl1.index)):
     conn = http.client.HTTPConnection("localhost:8080")
@@ -35,6 +38,7 @@ for i in range(len(df_bl1.index)):
         cpf = 0
     lCpf = lCpf + 1
     #print('CPF OK')
+    
     #--------------nome-------------------
     df_bl1['NOME'] = df_bl1['NOME'].str.replace(",", ";")
     df_bl1['NOME'] = df_bl1['NOME'].str.replace("/", ";")
@@ -43,12 +47,13 @@ for i in range(len(df_bl1.index)):
     lNome = 1
     contNome = 0
     try:
-        nome = df_bl1['NOME'].loc[i]
+        nome = df_bl1['NOME'].loc[i].rstrip()
+        nome = nome.lstrip()
         divisao = ';'
         if divisao in nome:
             nome = nome[:divisao]
         else:
-            nome = nome    
+            nome = nome  
         lNome = lNome + 1 
     except:
         nome = df_bl1['NOME'].loc[i]
@@ -222,7 +227,7 @@ for i in range(len(df_bl1.index)):
 
 
     url = "http://localhost:8080/cadcorr/findnome"
-    querystring = {"nome":{nome},"cpf":{cpf}}
+    querystring = {"nome":{nome},"cpf":{cpf},"email":{email}}
 
     payload = ""
     headers = {"User-Agent": "insomnia/2023.5.8"}
@@ -230,15 +235,17 @@ for i in range(len(df_bl1.index)):
     response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
 
     #print(response.text)
-    print(response)
-    
+    #print(response)
+    data = response
+
+
 
     if "[]".encode('utf-8') in response.content:
-        print("Aqui não -------------------------------------------")
+        #print("Aqui não -------------------------------------------")
         conn = http.client.HTTPConnection("localhost:8080")
         payload = f"{{\n\t\"nascimento\":\"1912-12-12\",\n\t\"cpf\":\"{cpf}\",\n\t\"nome\":\"{nome}\",\n\t\"rg\":\"{rg}\",\n\t\"telefone\":\"{telefone}\",\n  \"email\":\"{email}\",\n  \"celular\":{celular},\n  \"perfil\":\"{Perfil}\",\n  \"obs\":\"{OBS}\",\n  \"bloco\":\"{bloco}\",\n  \"ambiente\":\"{ambiente}\",\n  \"cartao\":\"12345678\",\n  \"unidade\":{unidade}\n}}"
         payload = f"{{\n\t\"nascimento\":\"{aniversario}\",\n\t\"cpf\":\"{cpf}\",\n\t\"nome\":\"{nome}\",\n\t\"rg\":\"{rg}\",\n\t\"telefone\":\"{telefone}\",\n  \"email\":\"{email}\",\n  \"celular\":{celular},\n  \"perfil\":\"{Perfil}\",\n  \"obs\":\"{OBS}\",\n  \"{bloco}\":\"2\",\n  \"ambiente\":\"{ambiente}\",\n  \"cartao\":\"12345678\",\n  \"unidade\":{unidade}\n}}"
-        print(payload)
+        #print(payload)
         headers = {
                 'Content-Type': "application/json",
                 'User-Agent': "insomnia/2023.5.8"
@@ -249,13 +256,25 @@ for i in range(len(df_bl1.index)):
         res = conn.getresponse()
         data = res.read()
 
-        print(data.decode("utf-8"))
+        #print(data.decode("utf-8"))
+        resposta = '"status":400'
+        if resposta in data.decode("utf-8"):
+            #print(f"nome:{nome}")
+            itemJson = nome  # Get input from the user
+            errojson.append(itemJson)
+    elif response.status_code == 400:
+        #print(f"Unexpected status code: {response.status_code}")
+        #print(f"Nome do tantan:{nome}")
+        itemEnd = nome  # Get input from the user
+        erroendpoint.append(itemEnd)
     else:
-        print(f"Unexpected status code: {response.status_code}")
-        print(f"Nome do tantan:{nome}")
+        #print(f"Unexpected status code: {response.status_code}")
+        #print(f"Nome do tantan:{nome}")
         item = nome  # Get input from the user
         cadastroscomerro.append(item)
 
 
-print("Lista de cadastros:", cadastroscomerro)
+print("Lista de cadastros repetido:", cadastroscomerro)
+print("Lista de cadastros no envio:", erroendpoint)
+print("Lista de cadastros Erro 400:", errojson)
 messagebox.showinfo("Title", "Processo finalizado!")    
